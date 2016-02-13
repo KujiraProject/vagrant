@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for n in 1 2 3
+do 
+  echo node$n:
+  ssh ceph@node$n "$@" 2>&1 | grep -v "Warning: Permanently added "
+  echo
+done
