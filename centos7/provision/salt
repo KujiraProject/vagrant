@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -e
+
+sudo yum install expect -y
+sudo yum localinstall /vagrant/rpms/salt*2014.7.1-1.fc22.noarch.rpm /vagrant/rpms/calamari-server*.rpm /vagrant/rpms/diamond*.rpm -y
+sudo ls -la  /var/log/calamari/
+sudo touch /var/log/calamari/httpd_access.log
+sudo touch /var/log/calamari/httpd_error.log
+sudo touch /var/log/calamari/calamari.log
+sudo touch /var/log/calamari/cthulhu.log
+sudo touch /var/log/calamari/info.log
+
+sudo chown -R apache:apache /var/log/calamari/
+
+sudo sed -i '184s/.*/    p = subprocess.Popen(\["salt '*' state.highstate"\], shell=True,/g' /opt/calamari/venv/lib/python2.7/site-packages/calamari_cthulhu-*.egg/cthulhu/calamari_ctl.py
+
+sudo cp -f /vagrant/etc/master /etc/salt/master
+sudo cp -f /vagrant/etc/minion /etc/salt/minion
+sudo systemctl restart salt-master
+sudo systemctl restart salt-minion
+
+ssh node1 sudo yum localinstall /vagrant/rpms/salt"{-,-minion-}"2014.7.1-1.fc22.noarch.rpm /vagrant/rpms/diamond*.rpm -y
+ssh node1 sudo cp -f /vagrant/etc/minion /etc/salt/minion
+ssh node1 sudo systemctl restart salt-minion
+
+sleep 3
+sudo salt-key -L
+
+init_calamari() {
+  sudo /usr/bin/expect <<EOD
+spawn calamari-ctl initialize
+expect "Username (leave blank to use 'root'):"
+send "admin\r"
+expect "Email address:"
+send "admin@kujira.com\r"
+expect "Password:"
+send "kujira\r"
+expect "Password (again):"
+send "kujira\r"
+EOD
+  return $?
+}
+
+set +e
+init_calamari
+if [ $? -ne 0 ]; then
+  echo "Failed to initialize calamari. Retrying"
+  init_calamari
+fi
+
+curl http://192.168.100.1/api/v2/info
