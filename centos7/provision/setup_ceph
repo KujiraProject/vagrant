@@ -28,7 +28,6 @@ ssh node1 sudo parted /dev/sdb print
 echo
 echo "Preparing drives"
 ceph-deploy disk prepare node1:sdb:/dev/sdb
-#--dmcrypt --dmcrypt-key-dir=/root --fs-type=xfs
 ssh node1 sudo parted /dev/sdb print
 sleep 5
 ceph-deploy -v disk activate node1:/dev/sdb1:/dev/sdb2

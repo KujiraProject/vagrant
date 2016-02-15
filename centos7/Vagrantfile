@@ -51,7 +51,8 @@ Vagrant.configure(2) do |config|
       puppet1.options = "--verbose --debug"
       puppet1.manifest_file = "stage_1_all.pp"
     end
-    mng.vm.provision "shell", inline: "sudo yum install ceph-deploy -y"
+    mng.vm.provision "shell", inline: "sudo yum install dos2unix ceph-deploy -y"
+    mng.vm.provision "shell", inline: "sudo dos2unix /vagrant/provision/*"
 
     mng.vm.provision "shell" do |ceph|
       ceph.inline = "sudo su ceph -c 'bash /vagrant/provision/setup_ceph'"

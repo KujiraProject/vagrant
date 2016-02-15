@@ -13,7 +13,7 @@ sudo touch /var/log/calamari/info.log
 
 sudo chown -R apache:apache /var/log/calamari/
 
-sudo sed -i '184s/.*/    p = subprocess.Popen(\["salt '*' state.highstate"\], shell=True,/g' /opt/calamari/venv/lib/python2.7/site-packages/calamari_cthulhu-*.egg/cthulhu/calamari_ctl.py
+sudo sed -i '184s/.*/    p = subprocess.Popen(\["salt \\"*\\" state.highstate"\], shell=True,/g' /opt/calamari/venv/lib/python2.7/site-packages/calamari_cthulhu-*.egg/cthulhu/calamari_ctl.py
 
 sudo cp -f /vagrant/etc/master /etc/salt/master
 sudo cp -f /vagrant/etc/minion /etc/salt/minion
@@ -42,11 +42,14 @@ EOD
   return $?
 }
 
-set +e
-init_calamari
-if [ $? -ne 0 ]; then
-  echo "Failed to initialize calamari. Retrying"
-  init_calamari
-fi
-
-curl http://192.168.100.1/api/v2/info
+#set +e
+#sudo timeout  15s calamari-ctl initialize
+#if [ $? -ne 0 ]; then
+#  echo "Failed to initialize calamari. Retrying"
+#  init_calamari
+#fi
+#
+#curl http://192.168.100.1/api/v2/info
+echo ""
+echo "Ceph + Calamari installed."
+echo "Run: sudo calamari-ctl initialize"
