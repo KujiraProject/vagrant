@@ -4,7 +4,9 @@ Requirements:
 Virtualbox-5
 vagrant
 Virtual box extension pack
+http://download.virtualbox.org/virtualbox/5.0.14/Oracle_VM_VirtualBox_Extension_Pack-5.0.14-105127.vbox-extpack
 
+Steps: 
 1. vagrant up
 
 2. For using behind proxy: Set proxy for yum and env variables.
