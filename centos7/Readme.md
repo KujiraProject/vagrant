@@ -3,6 +3,7 @@ Ceph + Calamari server vagrant setup for Centos7
 Requirements:
 Virtualbox-5
 vagrant
+Virtual box extension pack
 
 1. vagrant up
 
