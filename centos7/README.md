@@ -10,6 +10,7 @@ IMPORTANT!
 If you have different version of virtualbox you can select older version of box specified in vagrantfile.
 Set in vagrant file:
 config.vm.box_version < X.X.X
+
 config.vm.box_check_update = false
 
 
