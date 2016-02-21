@@ -27,3 +27,8 @@ In this case execute calamari-ctl manually (second time it works  o.o)
 user: admin. password: kujira
 
 - Make snapshot of configured environment.
+
+- It may happen that httpd will fail, then you have stop it and start manually:
+sudo systemctl stop httpd
+/usr/sbin/httpd -DFOREGROUND
+
