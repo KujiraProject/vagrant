@@ -12,6 +12,8 @@ Vagrant.configure(2) do |config|
   #config.vm.box = "milo-digital/base-centos7"
   #config.vm.box = "jayunit100/centos7"
   config.vm.box = "jhcook/centos7"
+  config.vm.box_version = "3.10.0.327.4.5"
+  config.vm.box_check_update = false
 
    config.vm.provider "virtualbox" do |vb|
      vb.memory = "1024"
