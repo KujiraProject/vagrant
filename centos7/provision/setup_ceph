@@ -5,6 +5,7 @@ set -e
 sshpass -p ceph ssh-copy-id node1
 
 mkdir -p  /home/ceph/ceph-cluster && cd /home/ceph/ceph-cluster
+ssh node1 sudo yum install redhat-lsb-core -y
 pwd
 ceph-deploy -v  new  --cluster-network 192.168.200.0/24 --public-network 192.168.200.0/24   node1
 cat /vagrant/etc/ceph.conf >> /home/ceph/ceph-cluster/ceph.conf
