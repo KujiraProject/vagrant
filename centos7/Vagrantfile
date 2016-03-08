@@ -8,27 +8,34 @@
 Vagrant.configure(2) do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://atlas.hashicorp.com/search.
-  #config.vm.box = "geerlingguy/centos7"
+  config.vm.box = "geerlingguy/centos7"
   #config.vm.box = "milo-digital/base-centos7"
   #config.vm.box = "jayunit100/centos7"
-  config.vm.box = "jhcook/centos7"
+  #config.vm.box = "jhcook/centos7"
+  config.vm.box_version = "1.0.8"
+  config.vm.box_check_update = false
 
-   config.vm.provider "virtualbox" do |vb|
-     vb.memory = "1024"
-     vb.cpus = 1
-   end
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "1024"
+    vb.cpus = 1
+  end
+  #config.ssh.pty = true
 
   config.vm.define "node1" do |node1|
     node1.vm.hostname = "node1"
     node1.vm.network "private_network", ip: "192.168.100.11", virtualbox__intnet: "admin_net"
     node1.vm.network "private_network", ip: "192.168.200.11", virtualbox__intnet: "ceph_net"
     node1.vm.provider :virtualbox do |vb|
+      vb.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata"]
       vb.customize ["createhd",  "--filename", "node1_disk1", "--size", "1024"]
-      vb.customize ["storageattach", :id, "--storagectl", "SATA", "--port", "2", "--type", "hdd", "--medium", "node1_disk1.vdi"]
-      # Leaving commented config. Some boxes may need additional controller
-      # vb.customize ["storagectl", :id, "--name", "SATA Controller", "--add", "sata"]
-      # vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "2", "--type", "hdd", "--medium", "node1_disk1.vdi"]
+      vb.customize ["createhd",  "--filename", "node1_disk2", "--size", "1024"]
+      # Leaving commented config. Some boxes may need/not need additional controller
+      #vb.customize ["storageattach", :id, "--storagectl", "SATA", "--port", "2", "--type", "hdd", "--medium", "node1_disk1.vdi"]
+      vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "2", "--type", "hdd", "--medium", "node1_disk1.vdi"]
+      vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "3", "--type", "hdd", "--medium", "node1_disk2.vdi"]
     end
+    node1.vm.provision "shell", inline: "sudo sed '/Defaults  requiretty/d' /etc/sudoers "
+    node1.vm.provision "shell", inline: "sudo yum clean all -y"
     node1.vm.provision "shell", inline: "sudo yum install epel-release -y"
     node1.vm.provision "shell", inline: "sudo yum install puppet augeas vim -y"
     node1.vm.provision "shell", inline: "sudo puppet module install puppetlabs-stdlib"
@@ -41,6 +48,7 @@ Vagrant.configure(2) do |config|
   config.vm.define "mng" do |mng|
     mng.vm.hostname = "mng"
     mng.vm.network "private_network", ip: "192.168.100.1", virtualbox__intnet: "admin_net"
+    mng.vm.provision "shell", inline: "sudo sed '/Defaults  requiretty/d' /etc/sudoers "
     mng.vm.provision "shell", inline: "sudo yum install epel-release -y"
     mng.vm.provision "shell", inline: "sudo yum install puppet augeas vim -y"
     mng.vm.provision "shell", inline: "sudo puppet module install puppetlabs-stdlib"
@@ -48,6 +56,7 @@ Vagrant.configure(2) do |config|
       puppet1.options = "--verbose --debug"
       puppet1.manifest_file = "stage_1_all.pp"
     end
+    mng.vm.provision "shell", inline: "sudo yum clean all -y"
     mng.vm.provision "shell", inline: "sudo yum install dos2unix ceph-deploy -y"
     mng.vm.provision "shell", inline: "sudo dos2unix /vagrant/provision/*"
 
