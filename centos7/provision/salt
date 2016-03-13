@@ -17,12 +17,19 @@ sudo sed -i '184s/.*/    p = subprocess.Popen(\["salt \\"*\\" state.highstate"\]
 
 sudo cp -f /vagrant/etc/master /etc/salt/master
 sudo cp -f /vagrant/etc/minion /etc/salt/minion
+sudo systemctl stop firewalld
+sudo systemctl disable firewalld
 sudo systemctl restart salt-master
 sudo systemctl restart salt-minion
+sudo systemctl enable salt-minion
+sudo systemctl enable salt-master
 
 ssh node1 sudo yum localinstall /vagrant/rpms/salt"{-,-minion-}"2014.7.1-1.fc22.noarch.rpm /vagrant/rpms/diamond*.rpm -y
 ssh node1 sudo cp -f /vagrant/etc/minion /etc/salt/minion
 ssh node1 sudo systemctl restart salt-minion
+ssh node1 sudo systemctl enable salt-minion
+ssh node1 sudo systemctl stop firewalld
+ssh node1 sudo systemctl disable firewalld
 
 sleep 3
 sudo salt-key -L

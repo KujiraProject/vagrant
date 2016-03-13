@@ -19,7 +19,7 @@ host { 'hosts_node3':
   ip           => "192.168.100.13"
 }
 
-package { ['sshpass', 'vim', 'tree', 'expect']:
+package { ['sshpass', 'vim', 'tree', 'expect', 'tmux']:
   ensure => 'installed'
 }
 
